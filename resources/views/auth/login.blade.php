@@ -2,7 +2,13 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    @if (session('error'))
+        <div class="mb-4 text-sm text-red-600">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('login') }}" id="loginForm">
         @csrf
 
         <!-- Email Address -->
@@ -44,4 +50,62 @@
             </x-primary-button>
         </div>
     </form>
+
+    <script>
+        // Refresh CSRF token on page visibility
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                fetch('/csrf-token', {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('input[name="_token"]').value = data.token;
+                })
+                .catch(error => console.error('CSRF refresh failed:', error));
+            }
+        });
+
+        // Retry on 419
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            const form = this;
+            const submitButton = form.querySelector('button[type="submit"]');
+            
+            if (form.dataset.retrying === 'true') {
+                return;
+            }
+
+            e.preventDefault();
+            
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    credentials: 'same-origin'
+                });
+
+                if (response.status === 419) {
+                    // Get fresh token
+                    const tokenResponse = await fetch('/csrf-token');
+                    const tokenData = await tokenResponse.json();
+                    form.querySelector('input[name="_token"]').value = tokenData.token;
+                    
+                    // Retry once
+                    form.dataset.retrying = 'true';
+                    form.submit();
+                } else if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const html = await response.text();
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                form.submit();
+            }
+        });
+    </script>
 </x-guest-layout>

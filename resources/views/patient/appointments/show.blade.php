@@ -57,7 +57,7 @@
                                 <h4 class="font-semibold text-lg">Dr. {{ $appointment->doctor->name }}</h4>
                                 <p class="text-gray-600">{{ $appointment->doctor->doctorProfile->specialization }}</p>
                                 <p class="text-sm text-gray-500 mt-1">{{ $appointment->doctor->email }}</p>
-                                @if($appointment->doctor->phone)
+                                @if($appointment->doctor->phone && $appointment->doctor->phone !== $appointment->doctor->email)
                                 <p class="text-sm text-gray-500">{{ $appointment->doctor->phone }}</p>
                                 @endif
                             </div>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Appointment extends Model
 {
@@ -18,7 +19,16 @@ class Appointment extends Model
         'department',
         'notes',
         'status',
-        'consultation_fee'
+        'consultation_fee',
+        'reason',
+        'type',
+        'duration',
+        'payment_status',
+        'cancellation_reason',
+        'cancelled_at',
+        'checked_in_at',
+        'started_at',
+        'completed_at'
     ];
 
     protected $casts = [
@@ -61,5 +71,24 @@ class Appointment extends Model
     public function patient()
     {
         return $this->belongsTo(User::class, 'patient_id');
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function canBeCancelled(): bool
+    {
+        if ($this->status === 'cancelled' || $this->status === 'completed') {
+            return false;
+        }
+
+        $start = $this->appointment_date->copy()->setTime(
+            $this->appointment_time->hour,
+            $this->appointment_time->minute
+        );
+
+        return now()->addHours(2)->lte($start);
     }
 }

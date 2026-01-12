@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+        
+        $middleware->validateCsrfTokens(except: [
+            // Add any routes that should bypass CSRF here if needed
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

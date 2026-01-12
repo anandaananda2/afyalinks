@@ -10,11 +10,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/csrf-token', function () {
+    return response()->json(['token' => csrf_token()]);
+})->middleware('web');
+
 // Default dashboard route - redirects based on role
 Route::get('/dashboard', function () {
     $user = auth()->user();
+
+    if (!$user) {
+        return redirect()->route('login');
+    }
     
-    return match($user->role) {
+    return match($user->role ?? null) {
         'patient' => redirect()->route('patient.dashboard'),
         'doctor' => redirect()->route('doctor.dashboard'),
         'health_worker' => redirect()->route('health-worker.dashboard'),
@@ -31,6 +39,7 @@ Route::middleware(['auth', 'verified', 'role:patient'])->prefix('patient')->name
     Route::get('/profile', [\App\Http\Controllers\Patient\ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [\App\Http\Controllers\Patient\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [\App\Http\Controllers\Patient\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\Patient\ProfileController::class, 'updatePassword'])->name('profile.password');
     
     // Browse Doctors
     Route::get('/doctors', [\App\Http\Controllers\Patient\DoctorController::class, 'index'])->name('doctors.index');
@@ -93,11 +102,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-Route::middleware(['auth'])->group(function () {
-    Route::get('/patient/profile/edit', [ProfileController::class, 'edit'])->name('patient.profile.edit');
-    Route::put('/patient/profile', [ProfileController::class, 'update'])->name('patient.profile.update');
-    Route::put('/patient/profile/password', [ProfileController::class, 'updatePassword'])->name('patient.profile.password');
 });
 
 require __DIR__.'/auth.php';
