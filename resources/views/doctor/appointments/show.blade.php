@@ -162,7 +162,7 @@
             <!-- Doctor's Notes -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Diagnosis & Notes</h3>
+                    <h3 class="text-lg font-semibold mb-4">Doctor's Notes</h3>
                     
                     @if($appointment->notes)
                     <div class="mb-4 p-4 bg-gray-50 rounded-lg">
@@ -177,18 +177,9 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                         
-                        <div class="mt-4 flex items-center justify-between">
-                            @if($appointment->status !== 'completed')
-                            <label class="inline-flex items-center">
-                                <input type="checkbox" name="complete" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                <span class="ml-2 text-sm text-gray-600">Mark as Completed</span>
-                            </label>
-                            @else
-                            <div></div>
-                            @endif
-
+                        <div class="mt-4">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
-                                {{ $appointment->notes ? 'Update Diagnosis' : 'Save Diagnosis' }}
+                                {{ $appointment->notes ? 'Update Notes' : 'Add Notes' }}
                             </button>
                         </div>
                     </form>

@@ -78,9 +78,6 @@ Route::middleware(['auth', 'verified', 'role:doctor'])->prefix('doctor')->name('
     Route::get('/appointments/{appointment}', [\App\Http\Controllers\Doctor\AppointmentController::class, 'show'])->name('appointments.show');
     Route::post('/appointments/{appointment}/status', [\App\Http\Controllers\Doctor\AppointmentController::class, 'updateStatus'])->name('appointments.updateStatus');
     Route::post('/appointments/{appointment}/notes', [\App\Http\Controllers\Doctor\AppointmentController::class, 'addNotes'])->name('appointments.addNotes');
-
-    // Analytics & Reports
-    Route::get('/analytics', [\App\Http\Controllers\Doctor\AnalyticsController::class, 'index'])->name('analytics.index');
 });
 
 // Health Worker Routes

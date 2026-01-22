@@ -53,7 +53,7 @@
                     <p class="text-sm text-gray-600">Edit your information</p>
                 </a>
 
-                <a href="{{ route('doctor.analytics.index') }}" class="bg-white hover:bg-gray-50 border-2 border-gray-200 p-6 rounded-lg shadow-sm transition">
+                <a href="#" class="bg-white hover:bg-gray-50 border-2 border-gray-200 p-6 rounded-lg shadow-sm transition">
                     <div class="text-3xl mb-2">📊</div>
                     <h4 class="font-semibold text-lg">View Reports</h4>
                     <p class="text-sm text-gray-600">Appointment analytics</p>
