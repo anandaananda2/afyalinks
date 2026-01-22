@@ -107,33 +107,37 @@
                                 <label class="block text-sm font-medium text-gray-700">Consultation Fee</label>
                                 <p class="mt-1 text-2xl font-bold text-green-600">KES {{ number_format($appointment->consultation_fee, 2) }}</p>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Payment Status</label>
-                                <span class="mt-1 inline-block px-3 py-1 text-sm rounded-full {{ $appointment->payment_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ ucfirst($appointment->payment_status) }}
-                                </span>
-                            </div>
                             
-                            @if($appointment->payment_status === 'pending')
-                            <div class="mt-4">
-                                <a href="{{ route('patient.payments.create', $appointment) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
-                                    Proceed to Payment
-                                </a>
+                            <div class="mt-4 p-4 bg-yellow-50 rounded-md border border-yellow-200">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-yellow-800">Payment Information</h3>
+                                        <div class="mt-2 text-sm text-yellow-700">
+                                            <p>Payment will be made on the appointment day before seeing the doctor.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            @endif
 
                             @if($appointment->payment && $appointment->payment->status === 'completed')
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Transaction ID</label>
-                                <p class="mt-1 text-gray-900 font-mono text-sm">{{ $appointment->payment->transaction_id }}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Payment Method</label>
-                                <p class="mt-1 text-gray-900">{{ $appointment->payment->paymentMethodLabel }}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Paid On</label>
-                                <p class="mt-1 text-gray-900">{{ $appointment->payment->paid_at ? $appointment->payment->paid_at->format('M d, Y h:i A') : '-' }}</p>
+                            <div class="mt-4 border-t pt-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Transaction ID</label>
+                                    <p class="mt-1 text-gray-900 font-mono text-sm">{{ $appointment->payment->transaction_id }}</p>
+                                </div>
+                                <div class="mt-2">
+                                    <label class="block text-sm font-medium text-gray-700">Payment Method</label>
+                                    <p class="mt-1 text-gray-900">{{ $appointment->payment->paymentMethodLabel }}</p>
+                                </div>
+                                <div class="mt-2">
+                                    <label class="block text-sm font-medium text-gray-700">Paid On</label>
+                                    <p class="mt-1 text-gray-900">{{ $appointment->payment->paid_at ? $appointment->payment->paid_at->format('M d, Y h:i A') : '-' }}</p>
+                                </div>
                             </div>
                             @endif
                         </div>

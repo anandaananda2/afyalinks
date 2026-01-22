@@ -87,23 +87,17 @@ $consultationFee = $doctor->doctorProfile->consultation_fee ?? 0;
             'type' => $validated['type'],
             'reason' => $validated['reason'],
             'consultation_fee' => $consultationFee,
-            'status' => 'pending',
+            'status' => 'confirmed',
             'payment_status' => 'pending',
-        ]);
-
-        // Create pending payment
-        Payment::create([
-            'appointment_id' => $appointment->id,
-            'user_id' => auth()->id(),
-            'amount' => $appointment->consultation_fee,
-            'payment_method' => 'cash', // Default to cash until user selects method
-            'status' => 'pending',
         ]);
 
         // Send appointment confirmation notification
         try {
-            // Temporarily comment out to test booking flow
-            // auth()->user()->notify(new AppointmentConfirmation($appointment));
+            // Send email to patient with PDF receipt
+            auth()->user()->notify(new AppointmentConfirmation($appointment));
+            
+            // Send email to doctor
+            $doctor->notify(new \App\Notifications\NewAppointmentNotification($appointment));
             
             // Create notification record
             AppointmentNotification::create([
@@ -111,9 +105,9 @@ $consultationFee = $doctor->doctorProfile->consultation_fee ?? 0;
                 'user_id' => auth()->id(),
                 'type' => 'appointment_confirmation',
                 'channel' => 'email',
-                'status' => 'pending', // Changed from 'sent' to 'pending' for now
+                'status' => 'sent',
                 'scheduled_for' => now(),
-                'sent_at' => null, // Will be updated when actually sent
+                'sent_at' => now(),
                 'message' => 'Appointment confirmation for ' . $appointment->appointment_date->format('M d, Y'),
             ]);
         } catch (\Exception $e) {
@@ -122,7 +116,7 @@ $consultationFee = $doctor->doctorProfile->consultation_fee ?? 0;
         }
 
         return redirect()->route('patient.appointments.show', $appointment)
-            ->with('success', 'Appointment booked successfully! Please proceed to payment.');
+            ->with('success', 'Appointment booked successfully! Payment will be made on the appointment day before seeing the doctor.');
     }
 
     public function show(Appointment $appointment): View
