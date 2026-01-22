@@ -34,6 +34,10 @@ class Appointment extends Model
     protected $casts = [
         'appointment_date' => 'date',
         'appointment_time' => 'datetime',
+        'checked_in_at' => 'datetime',
+        'started_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
     // IMPORTANT: Add this boot method
@@ -90,5 +94,27 @@ class Appointment extends Model
         );
 
         return now()->addHours(2)->lte($start);
+    }
+
+    public function getEndTimeAttribute()
+    {
+        if (!$this->appointment_time || !$this->duration) {
+            return null;
+        }
+        return $this->appointment_time->copy()->addMinutes($this->duration);
+    }
+
+    public function getStatusBadgeColorAttribute()
+    {
+        return match($this->status) {
+            'confirmed' => 'blue',
+            'checked_in' => 'indigo',
+            'in_progress' => 'yellow',
+            'completed' => 'green',
+            'cancelled' => 'red',
+            'no_show' => 'gray',
+            'pending' => 'yellow',
+            default => 'gray'
+        };
     }
 }

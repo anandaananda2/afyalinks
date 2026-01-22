@@ -93,10 +93,18 @@ class AppointmentController extends Controller
 
         $validated = $request->validate([
             'notes' => ['required', 'string', 'max:1000'],
+            'complete' => ['nullable', 'boolean'],
         ]);
 
-        $appointment->update(['notes' => $validated['notes']]);
+        $updateData = ['notes' => $validated['notes']];
 
-        return back()->with('success', 'Notes added successfully.');
+        if ($request->boolean('complete')) {
+            $updateData['status'] = 'completed';
+            $updateData['completed_at'] = now();
+        }
+
+        $appointment->update($updateData);
+
+        return back()->with('success', 'Diagnosis and notes saved successfully.');
     }
 }
