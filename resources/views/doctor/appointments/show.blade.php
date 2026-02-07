@@ -169,7 +169,13 @@
                         <p class="text-gray-700">{{ $appointment->notes }}</p>
                     </div>
                     @endif
-
+@if($appointment->ai_trend)
+<div class="alert alert-info mt-3">
+    <h6>AI Health Trend Prediction</h6>
+    <p class="mb-1"><strong>Trend:</strong> {{ $appointment->ai_trend }}</p>
+    <p class="mb-0"><strong>Confidence:</strong> {{ $appointment->ai_confidence }}%</p>
+</div>
+@endif
                     <form method="POST" action="{{ route('doctor.appointments.addNotes', $appointment) }}">
                         @csrf
                         <textarea name="notes" rows="4" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Add consultation notes, diagnosis, prescriptions, recommendations...">{{ old('notes', $appointment->notes) }}</textarea>

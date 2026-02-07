@@ -28,7 +28,9 @@ class Appointment extends Model
         'cancelled_at',
         'checked_in_at',
         'started_at',
-        'completed_at'
+        'completed_at',
+        'ai_trend',
+        'ai_confidence'
     ];
 
     protected $casts = [
