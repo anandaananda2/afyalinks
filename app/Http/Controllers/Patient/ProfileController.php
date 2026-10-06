@@ -4,49 +4,47 @@ namespace App\Http\Controllers\Patient;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+
 class ProfileController extends Controller
 {
-    public function edit()
+    public function show(): View
     {
         $user = auth()->user();
-        return view('patient.profile.edit', compact('user'));
+        $profile = $user->patientProfile;
+        
+        return view('patient.profile.show', compact('user', 'profile'));
     }
 
-    public function update(Request $request)
+    public function edit(): View
     {
         $user = auth()->user();
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-            'date_of_birth' => 'nullable|date',
-        ]);
-
-        $user->update($validated);
-
-        return redirect()->back()->with('success', 'Profile updated successfully!');
+        $profile = $user->patientProfile;
+        
+        return view('patient.profile.edit', compact('user', 'profile'));
     }
 
-    public function updatePassword(Request $request)
+    public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|min:8|confirmed',
+            'date_of_birth' => ['required', 'date', 'before:today'],
+            'gender' => ['required', 'in:male,female,other'],
+            'blood_group' => ['nullable', 'string', 'max:10'],
+            'address' => ['required', 'string', 'max:500'],
+            'national_id' => ['nullable', 'string', 'max:50', 'unique:patient_profiles,national_id,' . auth()->user()->patientProfile->id],
+            'allergies' => ['nullable', 'string', 'max:1000'],
+            'chronic_conditions' => ['nullable', 'string', 'max:1000'],
+            'current_medications' => ['nullable', 'string', 'max:1000'],
+            'past_surgeries' => ['nullable', 'string', 'max:1000'],
+            'emergency_contact_name' => ['required', 'string', 'max:255'],
+            'emergency_contact_phone' => ['required', 'string', 'max:20'],
+            'emergency_contact_relationship' => ['required', 'string', 'max:100'],
         ]);
 
-        $user = auth()->user();
+        auth()->user()->patientProfile->update($validated);
 
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect']);
-        }
-
-        $user->update([
-            'password' => Hash::make($request->password)
-        ]);
-
-        return redirect()->back()->with('success', 'Password updated successfully!');
+        return redirect()->route('patient.profile.show')
+            ->with('success', 'Profile updated successfully!');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Healthworker;
+namespace App\Http\Controllers\HealthWorker;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
